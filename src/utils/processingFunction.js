@@ -110,15 +110,41 @@ export const addPixelEventValue = async (
 	//const eventDatas = await getAllEventFromController();
 
 	for (let i = 0; i < eventDatas.length; i++) {
+		eventDatas[i].sort((a, b) => a.entity.duration - b.entity.duration);
+		let eventGroupOverlapingTabLength = eventDatas[i].length;
+
+		for (let j = 0; j < eventDatas[i].length; j++) {
+			if (j > 0) {
+				if (
+					!isOverlaping(
+						eventDatas[i][j].discretEvent,
+						eventDatas[i][j - 1].discretEvent
+					)
+				) {
+					eventGroupOverlapingTabLength -= 1;
+				}
+			}
+			console.log(i, eventGroupOverlapingTabLength);
+		}
+		let k = 0;
+		let compOverlaping = 0; // permet de compter le nombre de non chevauchement dans un groupe
 		for (let j = 0; j < eventDatas[i].length; j++) {
 			const element = eventDatas[i][j];
 			const marginPixel = 5;
-			const eventGroupOverlapingTabLength = eventDatas[i].length;
 			const eventPixel = convertFromEventEntityToPixelEntity(
 				element.entity.duration,
 				element.discretEvent[0],
 				screenHeight
 			);
+
+			if (j > 0) {
+				if (
+					!isOverlaping(element.discretEvent, eventDatas[i][j - 1].discretEvent)
+				) {
+					k -= 1;
+				}
+			}
+
 			// eventWidthPixel la longueur en pixel d'un évènement
 			const eventWidthPixel =
 				(screenWidth - eventGroupOverlapingTabLength * marginPixel) /
@@ -126,10 +152,11 @@ export const addPixelEventValue = async (
 
 			// leftPixel la distance d'un event par rapport au bord gauche du board
 			const leftPixel =
-				((screenWidth - eventGroupOverlapingTabLength) * j) /
+				((screenWidth - eventGroupOverlapingTabLength) * (j + k)) /
 				eventGroupOverlapingTabLength;
 
-			eventPixel["leftPixel"] = Math.round(leftPixel) + marginPixel * (1 + j);
+			eventPixel["leftPixel"] =
+				Math.round(leftPixel) + marginPixel * (1 + j + k);
 			eventPixel["eventWidthPixel"] = Math.round(eventWidthPixel);
 
 			eventDatas[i][j]["eventPixel"] = eventPixel;

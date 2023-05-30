@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 const { useState, useRef, useLayoutEffect, useEffect } = React;
 import { getAllEventFromController } from "../controllers/eventController";
 import {
@@ -9,9 +9,12 @@ import {
 
 const EventBoard = () => {
 	const eventBoardRef = useRef();
+	const didMountRef = useRef(false);
+
 	const [screenHeight, setHeight] = useState(300);
 	const [screenWidth, setWidth] = useState(800);
 	const [eventDatasList, setEventDatasList] = useState([]);
+	const [eventDatasBrut, setEventDatasBrut] = useState([]);
 
 	const getSize = () => {
 		const element = eventBoardRef.current;
@@ -23,30 +26,40 @@ const EventBoard = () => {
 	};
 
 	useLayoutEffect(() => {
-		getSize();
 		window.addEventListener("resize", getSize);
 
+		didMountRef.current = true;
 		return () => window.removeEventListener("resize", getSize);
 	}, [screenWidth, screenHeight]);
 
-	useEffect(() => {}, []);
+	useEffect(() => {
+		initBoard();
+	}, [didMountRef.current]);
+
+	const initBoard = async () => {
+		getData();
+		getSize();
+	};
+
+	const getData = async () => {
+		const eventDatas = await getAllEventFromController();
+		setEventDatasBrut(eventDatas);
+	};
 
 	const getAllEvent = async () => {
-		const eventDatas = await getAllEventFromController();
 		const eventDatasConverted = await addPixelEventValue(
-			eventDatas,
+			eventDatasBrut,
 			screenWidth,
 			screenHeight
 		);
 		const eventDataListArray =
 			fromComplexeEventDataToArray(eventDatasConverted);
 		setEventDatasList(eventDataListArray);
-		console.log(eventDatasConverted);
 	};
 
 	return (
 		<div>
-			<h3>React Js Get Element Height and Width</h3>
+			<h3>Event borad management</h3>
 
 			<div
 				ref={eventBoardRef}
@@ -55,8 +68,9 @@ const EventBoard = () => {
 				{eventDatasList.map((eventData, index) => (
 					<div
 						style={{
-							background: "green",
+							background: "gray",
 							position: "absolute",
+							color: "white",
 							width: eventData.eventPixel.eventWidthPixel,
 							height: eventData.eventPixel.durationPixel,
 							left: `${
