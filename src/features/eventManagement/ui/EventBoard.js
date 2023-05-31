@@ -18,14 +18,15 @@ const EventBoard = () => {
 
 	const getSize = () => {
 		const element = eventBoardRef.current;
-		const width = element.offsetWidth;
-		const height = element.offsetHeight;
+		const width = element.clientWidth;
+		const height = element.clientHeight;
 		setHeight(height);
 		setWidth(width);
 		getAllEvent();
 	};
 
 	useLayoutEffect(() => {
+		//const boardHtmlElement = window.document.getElementById("boardEvent");
 		window.addEventListener("resize", getSize);
 
 		didMountRef.current = true;
@@ -63,11 +64,12 @@ const EventBoard = () => {
 
 			<div
 				ref={eventBoardRef}
-				style={{ height: "500px", border: "1px solid #ccc" }}
+				style={{ height: "650px", border: "1px solid #ccc" }}
 			>
 				{eventDatasList.map((eventData, index) => (
 					<div
 						style={{
+							display: "flex",
 							background: "gray",
 							position: "absolute",
 							color: "white",
