@@ -26,7 +26,6 @@ const EventBoard = () => {
 	};
 
 	useLayoutEffect(() => {
-		//const boardHtmlElement = window.document.getElementById("boardEvent");
 		window.addEventListener("resize", getSize);
 
 		didMountRef.current = true;
@@ -69,7 +68,6 @@ const EventBoard = () => {
 				{eventDatasList.map((eventData, index) => (
 					<div
 						style={{
-							display: "flex",
 							background: "gray",
 							position: "absolute",
 							color: "white",

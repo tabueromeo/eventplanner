@@ -124,7 +124,6 @@ export const addPixelEventValue = async (
 					eventGroupOverlapingTabLength -= 1;
 				}
 			}
-			console.log(i, eventGroupOverlapingTabLength);
 		}
 		let k = 0;
 		let compOverlaping = 0; // permet de compter le nombre de non chevauchement dans un groupe
